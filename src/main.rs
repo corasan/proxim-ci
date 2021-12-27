@@ -1,23 +1,33 @@
+extern crate prettylog;
+
 use std::net::TcpListener;
 use std::io::Read;
-use std::collections::HashMap;
-use reqwest::StatusCode;
 use serde::{Serialize, Deserialize};
-use std::str::from_utf8;
+// use std::str::from_utf8;
 use std::process::Command;
+use structopt::StructOpt;
+use prettylog::*;
+
+const PORT: &str = "7878";
 
 #[tokio::main]
 async fn main() {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let args = Cli::from_args();
+    let addr = format!("{}:{}", &args.bind, PORT);
+    let listener = TcpListener::bind(addr).unwrap();
+    let msg = format!("Server listening at: {}:{}", &args.bind, PORT);
+    info(&msg);
 
-    for stream in listener.incoming() {
-        let mut stream = stream.unwrap();
-        let mut buffer = [0; 1024];
+    // for stream in listener.incoming() {
+    //     let mut stream = stream.unwrap();
+    //     let mut buffer = [0; 1024];
 
-        stream.read(&mut buffer).unwrap();
-        let mut git = Command::new("git");
-        let res = git.args(["pull", "--rebase", "origin", "main"]).output();
-        println!("{:?}", res);
+    //     stream.read(&mut buffer).unwrap();
+    //     let git = Command::new("git").args(["pull", "--rebase", "origin", "main"]).output();
+    //     println!("{:?}", String::from_utf8(git.unwrap().stderr));
+    //     let build = Command::new("yarn").args(["build"]).output();
+    //     println!("{:?}", String::from_utf8(build.unwrap().stderr));
+
         // println!("Request: {}",  )// (&buffer[..]));
         // let serialized = String::from_utf8_lossy(&buffer[..]);
         // println!("{:?}", serialized)
@@ -36,10 +46,12 @@ async fn main() {
         //     }
         //     s => println!("Received response status: {:?}", s),
         // };
-    }
+    // }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct Hook {
-    url: String
+#[derive(StructOpt)]
+#[structopt(name = "proximo")]
+struct Cli {
+    #[structopt(short = "b", long = "bind", default_value = "127.0.0.1")]
+    bind: String
 }
