@@ -16,7 +16,7 @@ async fn main() {
 
         stream.read(&mut buffer).unwrap();
         let mut git = Command::new("git");
-        let res = git.args(["push", "--rebase", "origin", "main"]).output();
+        let res = git.args(["pull", "--rebase", "origin", "main"]).output();
         println!("{:?}", res);
         // println!("Request: {}",  )// (&buffer[..]));
         // let serialized = String::from_utf8_lossy(&buffer[..]);
