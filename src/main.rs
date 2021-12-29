@@ -51,17 +51,20 @@ async fn main() {
         let msg = format!("Successfully built and deployed {}", name);
         map.insert("content", msg);
         let client = reqwest::Client::new();
-        let url = "https://discord.com/api/webhooks/925729576091516938/fALUTGVZI7MbzyGUAojuOhN4t5pfP9gdxhftd-fDcIY05_FF5QjMnfRdgi-pLvwHeuVI";
-        let res = client.post(url).json(&map).send().await;
+        let res = client.post(&args.webhook).json(&map).send().await;
     }
 }
 
 #[derive(StructOpt)]
 #[structopt(name = "proximo")]
 struct Cli {
+    // ip address you wish to bind to
     #[structopt(short = "b", long = "bind", default_value = "127.0.0.1")]
     bind: String,
-
+    // Path to Next.js project where you the package.js lives
     #[structopt(short = "p", long = "path")]
-    path: String //std::path::PathBuf
+    path: String,
+    // Discord webook URL
+    #[structopt(short = "w", long = "webhook")]
+    webhook: String
 }
