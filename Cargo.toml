@@ -5,6 +5,8 @@ edition = "2021"
 repository = "https://github.com/corasan/proximo-ci.git"
 keywords = ["cli", "next", "ci"]
 categories = ["command-line-utilities"]
+description = "Simple command line tool built with Rust to automatically pull from GitHub on push and run next.js build."
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
