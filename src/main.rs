@@ -20,34 +20,45 @@ async fn main() {
     let listener = TcpListener::bind(addr).unwrap();
     let msg = format!("Server listening at: {}:{}", &args.bind, PORT);
     info(&msg);
-
+    let mut yarn = Command::new("yarn");
+    info(format!("Project {} started", &args.path).as_str());
+    
     for stream in listener.incoming() {
+        let kill = Command::new("npx").args(["kill-port", "3000"]).output().expect("Error");
+        info("Exit app");
         let mut stream = stream.unwrap();
         let mut buffer = [0; 1024];
 
         stream.read(&mut buffer).unwrap();
-        let git = Command::new("git")
-            .args(["pull", "--rebase", "origin", "main"])
-            .output()
-            .expect("failed to execute process");
+
+        let post = b"POST / HTTP/1.1\r\n";
+        if (buffer.starts_with(post)) {
+
+            let git = Command::new("git")
+                .args(["pull", "--rebase", "origin", "main"])
+                .output()
+                .expect("failed to execute process");
+            let error_m = format!("\x1B[31m{}\x1B[0m", String::from_utf8_lossy(&git.stderr));
+            let info_m = format!("\x1B[32m{}\x1B[0m", String::from_utf8_lossy(&git.stdout));
+            
+            io::stdout().write_all(info_m.as_bytes()).unwrap();
+            io::stderr().write_all(error_m.as_bytes()).unwrap();
+
+            info("Building app");
+            let build = Command::new("yarn").current_dir(&args.path).arg("build").output().expect("Err!"); //.output().expect("Error!");
+            io::stdout().write_all(&build.stdout).unwrap();
+            io::stdout().write_all(&build.stderr).unwrap();
+            info("Build Finished");
+            yarn.current_dir(&args.path).args(["start-bg"]).spawn().expect("Error running app");
         
-        let error_m = format!("\x1B[31m{}\x1B[0m", String::from_utf8_lossy(&git.stderr));
-        let info_m = format!("\x1B[32m{}\x1B[0m", String::from_utf8_lossy(&git.stdout));
-        io::stdout().write_all(info_m.as_bytes()).unwrap();
-        io::stderr().write_all(error_m.as_bytes()).unwrap();
 
-        info("Building app");
-        let build = Command::new("yarn").current_dir(&args.path).args(["build"]).output().expect("Error!");
-        io::stdout().write_all(&build.stdout).unwrap();
-        io::stdout().write_all(&build.stderr).unwrap();
-        info("Build Finished");
-
-        let mut map = HashMap::new();
-        let name = "QuickRN";
-        let msg = format!("Successfully built and deployed {}", name);
-        map.insert("content", msg);
-        let client = reqwest::Client::new();
-        let res = client.post(&args.webhook).json(&map).send().await;
+            let mut map = HashMap::new();
+            let name = "QuickRN";
+            let msg = format!("Successfully built and deployed {}", name);
+            map.insert("content", msg);
+            let client = reqwest::Client::new();
+            let res = client.post(&args.webhook).json(&map).send().await;
+        }
     }
 }
 
