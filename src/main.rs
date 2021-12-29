@@ -24,7 +24,7 @@ async fn main() {
     info(format!("Project {} started", &args.path).as_str());
     
     for stream in listener.incoming() {
-        let kill = Command::new("npx").args(["kill-port", "3000"]).output().expect("Error");
+        let kill = Command::new("npx").current_dir(&args.path).args(["kill-port", "3000"]).output().expect("Error");
         info("Exit app");
         let mut stream = stream.unwrap();
         let mut buffer = [0; 1024];
@@ -35,6 +35,7 @@ async fn main() {
         if (buffer.starts_with(post)) {
 
             let git = Command::new("git")
+                .current_dir(&args.path)
                 .args(["pull", "--rebase", "origin", "main"])
                 .output()
                 .expect("failed to execute process");
