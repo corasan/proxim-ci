@@ -1,8 +1,8 @@
 [package]
-name = "proximo"
+name = "proxim"
 version = "0.1.0"
 edition = "2021"
-repository = "https://github.com/corasan/proximo-ci.git"
+repository = "https://github.com/corasan/proxim-ci.git"
 keywords = ["cli", "next", "ci"]
 categories = ["command-line-utilities"]
 description = "Simple command line tool built with Rust to automatically pull from GitHub on push and run next.js build."
@@ -13,8 +13,5 @@ license = "MIT"
 [dependencies]
 reqwest = { version = "0.11.8", features = ["blocking", "json"] }
 tokio = { version = "1", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 structopt = { version = "0.3" }
 prettylog = "0.1.4"
-regex = "1"

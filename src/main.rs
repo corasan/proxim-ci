@@ -4,21 +4,17 @@ extern crate prettylog;
 
 use std::net::TcpListener;
 use std::io::Read;
-use serde::{Serialize, Deserialize};
-// use std::str::from_utf8;
 use std::process::Command;
 use structopt::StructOpt;
 use prettylog::*;
 use std::io::{self, Write};
 use std::str;
-use regex::Regex;
 use std::collections::HashMap;
 
 const PORT: &str = "7878";
 
 #[tokio::main]
 async fn main() {
-    let re = Regex::new(r"\D").unwrap();
     let args = Cli::from_args();
     let addr = format!("{}:{}", &args.bind, PORT);
     let listener = TcpListener::bind(addr).unwrap();
@@ -56,7 +52,7 @@ async fn main() {
 }
 
 #[derive(StructOpt)]
-#[structopt(name = "proximo")]
+#[structopt(name = "proxim")]
 struct Cli {
     // ip address you wish to bind to
     #[structopt(short = "b", long = "bind", default_value = "127.0.0.1")]
